@@ -3,14 +3,14 @@
 *Note: the paper has not been reviewed yet.*
 
 ## Introduction
-This repository contains the code used for the analyses and some of the figures in the corresponding publication. 
+This repository contains the code used for the analyses and for making the figures in the corresponding publication. 
 The final figures in the paper were created using image processing software.
 
 ## Overview
-- plot_fluxes_vs_aridity_observations.py creates Figure 2
-- plot_fluxes_vs_aridity_toy_model.py creastes Figure 3
-- resample_rasters.py is used to resample the raster files
-- functions contains a range of helpers functions
+- *plot_fluxes_vs_aridity_observations.py* creates Figure 2
+- *plot_fluxes_vs_aridity_toy_model.py* creastes Figure 3
+- *resample_rasters.py* is used to resample the raster files
+- the folder *functions* contains a range of helper functions
 
 ## Data sources
 Groundwater recharge observations from MacDonald et al. (2021) are available from https://www2.bgs.ac.uk/nationalgeosciencedatacentre/citedData/catalogue/45d2b71c-d413-44d4-8b4b-6190527912ff.html. 
