@@ -22,13 +22,7 @@ if not os.path.isdir(figures_path):
 
 ### load data ###
 
-# ERA5
-# ds_ERA5 = xr.open_dataset(results_path + "ERA5_aggregated.nc4")  # used to extract aridity for recharge datasets
-# df_ERA5 = pd.read_csv(results_path + "ERA5_aggregated.csv")
-# df_ERA5 = df_ERA5.sample(100000)  # to reduce size
-# print("Finished ERA5.")
-
-# load WorldClim data
+# load climate data
 def load_raster(file_path):
     with rasterio.open(file_path) as src:
         crs = src.crs
@@ -73,6 +67,7 @@ print("Finished processing CHELSA data.")
 
 # load df
 df = pd.read_csv(results_path + "combined_chelsa_5min.csv")
+#df = pd.read_csv(results_path + "combined_worldclim_5min.csv")
 
 # plot map of aridity index as a check
 fig, ax = plt.subplots(figsize=(10, 6))

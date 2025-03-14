@@ -25,6 +25,7 @@ if not os.path.isdir(figures_path):
 
 # climate data
 df = pd.read_csv(results_path + "combined_chelsa_5min.csv")
+#df = pd.read_csv(results_path + "combined_worldclim_5min.csv")
 
 # Moeck
 df_tmp = pd.read_csv("./results/global_groundwater_recharge_moeck-et-al.csv", sep=',')
@@ -53,7 +54,7 @@ P[P == 0] = 1e-9
 PET = np.round(np.random.rand(n) * 2000)
 AI = PET / P
 R_P = curve_fcts.Berghuijs_recharge_curve(AI)
-#R_P = curve_fcts.Berghuijs_recharge_curve_alt(AI)
+# R_P = curve_fcts.Berghuijs_recharge_curve_alt(AI)
 Q_P = 1 - curve_fcts.Budyko_curve(AI)
 E_P = curve_fcts.Budyko_curve(AI)
 BFI = np.random.rand(n)  # random fraction
@@ -107,14 +108,13 @@ plotting_fcts.plot_grid(axes)
 fig.savefig(figures_path + "flux_partitioning_observations_Berghuijs.png", dpi=600, bbox_inches='tight')
 plt.close()
 
-
 # get ranges for water balance components
 n = 10000000
 P = np.round(np.random.rand(n) * 3000)
 P[P == 0] = 1e-9
 PET = np.round(np.random.rand(n) * 2000)
 AI = PET / P
-#R_P = curve_fcts.Berghuijs_recharge_curve(AI)
+# R_P = curve_fcts.Berghuijs_recharge_curve(AI)
 R_P = curve_fcts.Berghuijs_recharge_curve_alt(AI)
 Q_P = 1 - curve_fcts.Budyko_curve(AI)
 E_P = curve_fcts.Budyko_curve(AI)
@@ -168,46 +168,3 @@ axes.set_xscale('log')
 plotting_fcts.plot_grid(axes)
 fig.savefig(figures_path + "flux_partitioning_observations_Berghuijs_alternative.png", dpi=600, bbox_inches='tight')
 plt.close()
-
-### quantifications
-
-# todo: calculate global fluxes using different relationships
-
-# account for grid cell size
-df_area = []
-# loop over lat,lon
-for x, y in zip(df["longitude"], df["latitude"]):
-    # https://gis.stackexchange.com/questions/421231/how-can-i-calculate-the-area-of-a-5-arcminute-grid-cell-in-square-kilometers-gi
-    # 1 degree of latitude = 111.567km. This varies very slightly by latitude, but we'll ignore that
-    # 5 arcminutes of latitude is 1/12 of that, so 9.297km
-    # 5 arcminutes of longitude is similar, but multiplied by cos(latitude) if latitude is in radians, or cos(latitude/360 * 2 * 3.14159) if in degrees
-    # we have half a degree here
-    y_len = 111.567 / 10  # 0.1 degrees /12#60/2
-    x_len = y_len * np.cos(y / 360 * 2 * np.pi)
-    df_area.append([x_len, y_len])
-df_area = pd.DataFrame(df_area)
-df_area["area"] = df_area[0] * df_area[1]
-print("Total land area: ", str(df_area["area"].sum()))
-
-df["area"] = df_area["area"]
-
-df.loc[df["ai"] < 0, "ai"] = np.nan
-# df.loc[df["ai"]<0.8,"ai"] = np.nan # as in Berghuijs paper
-
-# todo: remove greenland and antarctica
-df.loc[df["latitude"] < -60, "area"] = np.nan
-# df_greenland = pd.read_csv(data_path + "greenland.csv", sep=',') # greenland mask for plot
-
-# calculate fluxes
-df["Q"] = (1 - curve_fcts.Budyko_curve(df["ai"])) * df["P"]
-df["E"] = (curve_fcts.Budyko_curve(df["ai"])) * df["P"]
-df["R"] = (curve_fcts.Berghuijs_recharge_curve(df["ai"])) * df["P"]
-
-# todo: add baseflow etc
-
-# calculate global averages
-P_mean = (df["P"] * df["area"]).sum() / df["area"].sum()
-PET_mean = (df["PET"] * df["area"]).sum() / df["area"].sum()
-Q_mean = (df["Q"] * df["area"]).sum() / df["area"].sum()
-E_mean = (df["E"] * df["area"]).sum() / df["area"].sum()
-R_mean = (df["R"] * df["area"]).sum() / df["area"].sum()
